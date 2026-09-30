@@ -1,0 +1,336 @@
+```html
+<!DOCTYPE html>
+<html lang="id" class="dark scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SisKom CyberLab - Learning & Interactive CPU Arcade</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&family=Inter:wght@300;400;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        cyber: {
+                            bg: '#030712',
+                            card: '#0f172a',
+                            cyan: '#00f0ff',
+                            purple: '#a855f7',
+                            emerald: '#10b981',
+                            rose: '#f43f5e',
+                            amber: '#f59e0b'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['Fira Code', 'monospace']
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background-color: #030712;
+            color: #f3f4f6;
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+        }
+
+        /* Glassmorphism & Neon Glow */
+        .glass-card {
+            background: rgba(15, 23, 42, 0.75);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .glow-cyan {
+            box-shadow: 0 0 20px rgba(0, 240, 255, 0.25);
+        }
+        
+        .glow-purple {
+            box-shadow: 0 0 20px rgba(168, 85, 247, 0.25);
+        }
+
+        .border-glow-cyan {
+            border-color: rgba(0, 240, 255, 0.5);
+            box-shadow: 0 0 15px rgba(0, 240, 255, 0.3);
+        }
+
+        .text-glow-cyan {
+            text-shadow: 0 0 10px rgba(0, 240, 255, 0.6);
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #030712;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #1e293b;
+            border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #00f0ff;
+        }
+
+        /* Data Pulse Line */
+        @keyframes pulseLine {
+            0% { stroke-dashoffset: 100; }
+            100% { stroke-dashoffset: 0; }
+        }
+
+        .animated-bus {
+            stroke-dasharray: 10;
+            animation: pulseLine 1.5s linear infinite;
+        }
+
+        /* Certificate Print Setup */
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+            #printable-certificate, #printable-certificate * {
+                visibility: visible;
+            }
+            #printable-certificate {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                background: white !important;
+                color: black !important;
+            }
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col selection:bg-cyan-500 selection:text-slate-950">
+
+    <!-- TOP NAVIGATION BAR -->
+    <nav class="sticky top-0 z-50 glass-card border-b border-slate-800/80 px-4 lg:px-8 py-3">
+        <div class="max-w-7xl mx-auto flex items-center justify-between">
+            <!-- Brand Logo -->
+            <div class="flex items-center space-x-3 cursor-pointer" onclick="switchTab('materi')">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-cyan-500 to-purple-600 flex items-center justify-center text-slate-950 font-black text-xl shadow-lg shadow-cyan-500/20">
+                    <i class="fa-solid fa-microchip"></i>
+                </div>
+                <div>
+                    <span class="text-xl font-black tracking-wider bg-gradient-to-r from-cyan-400 via-purple-400 to-emerald-400 bg-clip-text text-transparent">
+                        SisKom<span class="text-white text-xs px-2 py-0.5 rounded bg-cyan-950 border border-cyan-800 ml-1 font-mono">CYBERLAB v2.5</span>
+                    </span>
+                    <p class="text-[10px] text-slate-400 font-mono tracking-tight">Akademi System & Arsitektur Komputer</p>
+                </div>
+            </div>
+
+            <!-- Audio Toggle & Quick Info -->
+            <div class="hidden md:flex items-center space-x-3">
+                <button id="audioToggleBtn" onclick="toggleAudio()" class="px-3 py-1.5 rounded-lg bg-slate-900 border border-slate-700 hover:border-cyan-500 text-xs font-mono flex items-center space-x-2 text-slate-300 transition-all">
+                    <i id="audioIcon" class="fa-solid fa-volume-high text-cyan-400"></i>
+                    <span id="audioStatusText">AUDIO: ON</span>
+                </button>
+                <div class="px-3 py-1.5 rounded-lg bg-cyan-950/40 border border-cyan-800/50 text-cyan-300 text-xs font-mono">
+                    <i class="fa-solid fa-circle text-[8px] text-emerald-400 animate-pulse mr-1.5"></i>Sistem Online
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB BUTTONS (Responsive Grid/Flex) -->
+        <div class="max-w-7xl mx-auto mt-3 pt-2 border-t border-slate-800/60 flex items-center justify-start sm:justify-center overflow-x-auto space-x-2 no-scrollbar">
+            <button onclick="switchTab('materi')" id="tab-materi" class="tab-btn active text-xs sm:text-sm px-4 py-2 rounded-xl font-semibold transition-all flex items-center space-x-2 whitespace-nowrap bg-gradient-to-r from-cyan-500 to-blue-600 text-slate-950 font-bold shadow-lg shadow-cyan-500/20">
+                <i class="fa-solid fa-book-open"></i>
+                <span>1. Materi & Visual Alur</span>
+            </button>
+            <button onclick="switchTab('rakit')" id="tab-rakit" class="tab-btn text-xs sm:text-sm px-4 py-2 rounded-xl font-semibold text-slate-400 hover:text-cyan-300 hover:bg-slate-900/80 transition-all flex items-center space-x-2 whitespace-nowrap">
+                <i class="fa-solid fa-screwdriver-wrench"></i>
+                <span>2. Rakit PC & Booting</span>
+            </button>
+            <button onclick="switchTab('arcade')" id="tab-arcade" class="tab-btn text-xs sm:text-sm px-4 py-2 rounded-xl font-semibold text-slate-400 hover:text-cyan-300 hover:bg-slate-900/80 transition-all flex items-center space-x-2 whitespace-nowrap">
+                <i class="fa-solid fa-gamepad"></i>
+                <span>3. CPU Data Rush Arcade</span>
+            </button>
+            <button onclick="switchTab('kuis')" id="tab-kuis" class="tab-btn text-xs sm:text-sm px-4 py-2 rounded-xl font-semibold text-slate-400 hover:text-cyan-300 hover:bg-slate-900/80 transition-all flex items-center space-x-2 whitespace-nowrap">
+                <i class="fa-solid fa-award"></i>
+                <span>4. Kuis & Sertifikat</span>
+            </button>
+        </div>
+    </nav>
+
+    <main class="flex-grow max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8">
+
+        <!-- ================= TAB 1: MATERI & VISUALISASI ================= -->
+        <section id="content-materi" class="tab-content space-y-8">
+            <!-- Hero Banner -->
+            <div class="relative rounded-3xl glass-card p-6 sm:p-10 overflow-hidden border border-cyan-500/20">
+                <div class="absolute -right-16 -bottom-16 w-64 h-64 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none"></div>
+                <div class="absolute -left-16 -top-16 w-64 h-64 bg-purple-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
+                <div class="relative z-10 max-w-3xl">
+                    <span class="px-3 py-1 rounded-full bg-cyan-950 border border-cyan-700 text-cyan-300 text-xs font-mono uppercase tracking-widest inline-block mb-3">
+                        <i class="fa-solid fa-atom mr-1.5"></i>Dasar & Arsitektur
+                    </span>
+                    <h1 class="text-3xl sm:text-5xl font-black text-white tracking-tight leading-tight mb-4">
+                        Membedah Anatomi & Cara Kerja <span class="bg-gradient-to-r from-cyan-400 to-purple-400 bg-clip-text text-transparent">Sistem Komputer</span>
+                    </h1>
+                    <p class="text-slate-300 text-sm sm:text-base leading-relaxed mb-6">
+                        Sistem Komputer adalah ekosistem terpadu tempat **Hardware**, **Software**, dan **Brainware** berkolaborasi untuk mengolah data mentah menjadi informasi bermanfaat melalui arsitektur pemrosesan tercepat di bumi.
+                    </p>
+
+                    <!-- Core Triad Cards -->
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 font-sans">
+                        <div class="p-4 rounded-2xl bg-slate-900/90 border border-slate-800 hover:border-cyan-500/50 transition-all">
+                            <div class="text-cyan-400 text-2xl mb-2"><i class="fa-solid fa-microchip"></i></div>
+                            <h3 class="font-bold text-white text-sm mb-1">Hardware</h3>
+                            <p class="text-xs text-slate-400">Komponen fisik tempat aliran daya listrik & data mengalir secara mekanis/elektronik.</p>
+                        </div>
+                        <div class="p-4 rounded-2xl bg-slate-900/90 border border-slate-800 hover:border-purple-500/50 transition-all">
+                            <div class="text-purple-400 text-2xl mb-2"><i class="fa-solid fa-code"></i></div>
+                            <h3 class="font-bold text-white text-sm mb-1">Software</h3>
+                            <p class="text-xs text-slate-400">Set instruksi & kode program (OS, Aplikasi) yang memerintahkan fisik Hardware.</p>
+                        </div>
+                        <div class="p-4 rounded-2xl bg-slate-900/90 border border-slate-800 hover:border-emerald-500/50 transition-all">
+                            <div class="text-emerald-400 text-2xl mb-2"><i class="fa-solid fa-user-gear"></i></div>
+                            <h3 class="font-bold text-white text-sm mb-1">Brainware</h3>
+                            <p class="text-xs text-slate-400">Manusia (Programmer, Operator, Admin) yang memberi arahan dan tujuan sistem.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Interactive Von Neumann Diagram -->
+            <div class="glass-card rounded-3xl p-6 sm:p-8 border border-slate-800">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
+                    <div>
+                        <h2 class="text-2xl font-black text-white flex items-center">
+                            <i class="fa-solid fa-diagram-project text-cyan-400 mr-3"></i>
+                            Arsitektur Von Neumann & Alur Eksekusi
+                        </h2>
+                        <p class="text-xs sm:text-sm text-slate-400 mt-1">Pilih jenis data lalu klik tombol simulasi untuk melihat pergerakan paket data melalui Bus Sistem secara real-time.</p>
+                    </div>
+
+                    <!-- Preset Simulation Controls -->
+                    <div class="flex flex-wrap gap-2">
+                        <button onclick="runVonNeumannSimulation('math')" class="px-3 py-2 rounded-xl bg-cyan-950 hover:bg-cyan-900 border border-cyan-700 text-cyan-300 text-xs font-semibold flex items-center space-x-1.5 transition-all">
+                            <i class="fa-solid fa-calculator"></i>
+                            <span>Aritmatika (5 + 8)</span>
+                        </button>
+                        <button onclick="runVonNeumannSimulation('save')" class="px-3 py-2 rounded-xl bg-purple-950 hover:bg-purple-900 border border-purple-700 text-purple-300 text-xs font-semibold flex items-center space-x-1.5 transition-all">
+                            <i class="fa-solid fa-floppy-disk"></i>
+                            <span>Simpan File</span>
+                        </button>
+                        <button onclick="runVonNeumannSimulation('render')" class="px-3 py-2 rounded-xl bg-emerald-950 hover:bg-emerald-900 border border-emerald-700 text-emerald-300 text-xs font-semibold flex items-center space-x-1.5 transition-all">
+                            <i class="fa-solid fa-display"></i>
+                            <span>Tampil Layar</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- DIAGRAM CANVAS / SCHEMATIC -->
+                <div class="relative w-full bg-slate-950 rounded-2xl border border-slate-800 p-4 sm:p-8 overflow-hidden min-h-[420px] flex flex-col justify-between">
+                    
+                    <!-- Diagram Grid Components -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 relative z-10">
+                        
+                        <!-- Input Devices -->
+                        <div id="node-input" class="von-node bg-slate-900/90 p-4 rounded-xl border border-slate-700 transition-all text-center">
+                            <div class="w-10 h-10 rounded-lg bg-blue-950 text-blue-400 flex items-center justify-center mx-auto mb-2 text-xl">
+                                <i class="fa-solid fa-keyboard"></i>
+                            </div>
+                            <h4 class="font-bold text-sm text-white">Input Device</h4>
+                            <p class="text-[11px] text-slate-400 mt-1">Keyboard, Mouse, Sensor</p>
+                        </div>
+
+                        <!-- Central CPU Core -->
+                        <div id="node-cpu" class="von-node bg-slate-900/90 p-4 rounded-xl border-2 border-cyan-800 transition-all">
+                            <div class="flex items-center justify-between border-b border-slate-800 pb-2 mb-3">
+                                <span class="text-xs font-mono font-bold text-cyan-400 flex items-center">
+                                    <i class="fa-solid fa-microchip mr-1.5"></i>CPU (Otak Komputer)
+                                </span>
+                                <span id="cpu-clock" class="text-[10px] font-mono text-slate-500">CLOCK: 3.8 GHz</span>
+                            </div>
+
+                            <div class="grid grid-cols-2 gap-2 text-center text-xs">
+                                <div id="node-cu" class="p-2 rounded bg-slate-950 border border-slate-800">
+                                    <span class="block font-bold text-purple-400">Control Unit</span>
+                                    <span class="text-[10px] text-slate-500">Penterjemah / Pengendali</span>
+                                </div>
+                                <div id="node-alu" class="p-2 rounded bg-slate-950 border border-slate-800">
+                                    <span class="block font-bold text-rose-400">ALU</span>
+                                    <span class="text-[10px] text-slate-500">Hitung Matematika/Logika</span>
+                                </div>
+                            </div>
+                            <div id="node-registers" class="mt-2 p-2 rounded bg-slate-950 border border-slate-800 text-center">
+                                <span class="block font-bold text-amber-400 text-xs">Registers</span>
+                                <span class="text-[10px] text-slate-500">Memori Kilat Super Cepat</span>
+                            </div>
+                        </div>
+
+                        <!-- Output Devices -->
+                        <div id="node-output" class="von-node bg-slate-900/90 p-4 rounded-xl border border-slate-700 transition-all text-center">
+                            <div class="w-10 h-10 rounded-lg bg-emerald-950 text-emerald-400 flex items-center justify-center mx-auto mb-2 text-xl">
+                                <i class="fa-solid fa-desktop"></i>
+                            </div>
+                            <h4 class="font-bold text-sm text-white">Output Device</h4>
+                            <p class="text-[11px] text-slate-400 mt-1">Monitor, Printer, Speaker</p>
+                        </div>
+                    </div>
+
+                    <!-- Lower Row: Primary Memory & Secondary Storage -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6 relative z-10">
+                        <div id="node-ram" class="von-node bg-slate-900/90 p-4 rounded-xl border border-slate-700 transition-all flex items-center space-x-4">
+                            <div class="w-12 h-12 rounded-lg bg-purple-950 text-purple-400 flex items-center justify-center text-2xl shrink-0">
+                                <i class="fa-solid fa-memory"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-sm text-white">RAM (Memori Utama / Volatile)</h4>
+                                <p class="text-[11px] text-slate-400">Menyimpan data sementara saat komputer hidup untuk diakses cepat oleh CPU.</p>
+                            </div>
+                        </div>
+
+                        <div id="node-storage" class="von-node bg-slate-900/90 p-4 rounded-xl border border-slate-700 transition-all flex items-center space-x-4">
+                            <div class="w-12 h-12 rounded-lg bg-amber-950 text-amber-400 flex items-center justify-center text-2xl shrink-0">
+                                <i class="fa-solid fa-hard-drive"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-sm text-white">Storage (SSD / Hardisk / Non-Volatile)</h4>
+                                <p class="text-[11px] text-slate-400">Menyimpan berkas & program secara permanen walaupun listrik mati.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Live Terminal Output Bar for Diagram -->
+                    <div class="mt-6 p-3 rounded-xl bg-slate-900 border border-slate-800 font-mono text-xs flex items-center justify-between">
+                        <div class="flex items-center space-x-2 text-cyan-400">
+                            <i class="fa-solid fa-terminal"></i>
+                            <span id="diagram-log" class="text-slate-300">Siap menerima instruksi. Klik tombol simulasi di atas.</span>
+                        </div>
+                        <span id="diagram-step-badge" class="px-2 py-0.5 rounded bg-slate-800 text-[10px] text-slate-400">STEP 0/0</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Hardware Gallery Component -->
+            <div class="space-y-4">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    <div>
+                        <h3 class="text-xl font-bold text-white flex items-center">
+                            <i class="fa-solid fa-boxes-stacked text-purple-400 mr-2"></i>
+                            Galeri Komponen Perangkat Keras
+                        </h3>
+                        <p class="text-xs text-slate-400">Eksplorasi peran spesifik setiap bagian hardware dalam sistem.</p>
+                    </div>
+
+                    <!-- Filters -->
+                    <div class="flex flex-wrap gap-1 bg-slate-900 p-1 rounded-xl border border-slate-800 text-xs font-semibold">
+                        <button onclick="filterHardware('all')" class="hw-filter-btn px-3 py-1.5 rounded-lg bg-cyan-500 text-slate-950 font-bold">Semua</button>
+                        <button onclick="filterHardware('input')" class="hw
